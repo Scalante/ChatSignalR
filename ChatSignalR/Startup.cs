@@ -14,6 +14,11 @@ namespace ChatSignalR
 
         public void ConfigureServices(IServiceCollection services)
         {
+            //Registro del servicio - SignalR
+            services.AddSignalR();
+            services.AddControllersWithViews();
+
+
             //Registro del DbContext
             //services.AddDbContext<ApplicationDbContext>(options =>
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -63,13 +68,17 @@ namespace ChatSignalR
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors("CorsRule");
-
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
+                    );
+                endpoints.MapHub<ChatHub>("/Chats");
             });
         }
 

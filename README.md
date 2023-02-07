@@ -35,7 +35,14 @@ ASP.NET SignalR es una biblioteca para ASP.NET desarrolladores que simplifican e
 * Bootstrap
 
 ####Funcionamiento 📐
-![image info](Documentation/)
+* Usuarios creados en la BD
+![image info](ChatSignalR/Documentation/Login.png)
+
+* Instancias de los navegadores Chrome, Edge
+![image info](ChatSignalR/Documentation/InstanciasNavegadoresChat.png)
+
+* Ejecución Éxitosa del chat con SignalR
+![image info](ChatSignalR/Documentation/EjecuciónExitosaChat.png)
 
 ####Utilidades 💪
 * La base de datos para gestionar los usuarios, relacionar los nombres de las salas del chat se alojó en [Somee]( https://somee.com/) plan gratuito.

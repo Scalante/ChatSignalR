@@ -1,25 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using ChatSignalR.Core.Interfaces;
+using ChatSignalR.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChatSignalR.Controllers
 {
     public class ChatsController : Controller
     {
-        public static Dictionary<int, string> ChatListOptions = new Dictionary<int, string>()
+        protected readonly IUsuarioRepository _usuarioRepository;
+
+        public ChatsController(IUsuarioRepository usuarioRepositorio)
         {
-            {1, "Tecnología" },
-            {2, "Deporte" },
-            {3, "Noticias" }
-        };
+            this._usuarioRepository = usuarioRepositorio;
+        }
 
-
+        [AuthorizeUsers(Policy = "ADMINISTRADORES")]
         public IActionResult ChatList()
         {
-            return View(ChatListOptions);
+            return View(_usuarioRepository.ChatListOptions());
         }
 
         public IActionResult Chat(int idChat)
         {
+            var nombreSalaSeleccionada = _usuarioRepository.ChatListOptions().GetValueOrDefault(idChat);
+            ViewData["NombreSalaChat"] = nombreSalaSeleccionada;
             return View("Chat", idChat);
         }
     }

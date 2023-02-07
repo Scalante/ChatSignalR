@@ -1,11 +1,12 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ChatSignalIr</title>
+    <title>@ViewData["Title"] - RegistroLogin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("estilos", false)
 </head>
 <body>
     <header>
@@ -22,7 +23,13 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            @*<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>*@
+                        </li>
+                        <li class="nav-item">
+                            @*<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="PaginaProtegida">Pagina protegida</a>*@
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdminUsuarios">Lista de Usuarios</a>
                         </li>
 
                         <li class="nav-item">
@@ -30,6 +37,7 @@
                         </li>
 
                     </ul>
+                    <partial name="_MenuLogIn" />
                 </div>
             </div>
         </nav>
@@ -42,7 +50,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - ChatSignalIr - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - ChatSignalIr
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -1,4 +1,10 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using ChatSignalR.Core.Interfaces;
+using ChatSignalR.Infrastructure.Context;
+using ChatSignalR.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace ChatSignalR
@@ -14,38 +20,39 @@ namespace ChatSignalR
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //Registro del servicio - SignalR
-            services.AddSignalR();
-            services.AddControllersWithViews();
-
 
             //Registro del DbContext
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            //Registro de AutoMapper
-            //services.AddAutoMapper(typeof(Startup));
-
-            //services.AddTransient<IAlmacenadorArchivos, AlmacenadorArchivos>();
-
-            //Permite evitar los ciclos infinitos en las relaciones de clases
-            //services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-            //No muestra en la respuesta de la API los atributos que tienen como valor NULL, esto funciona con Controllers
-            //services.AddControllers().AddNewtonsoftJson().AddJsonOptions(opciones => opciones.JsonSerializerOptions.DefaultIgnoreCondition
-            //                = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull);
-
-
-            //Configuración de Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(c =>
+            services.AddDistributedMemoryCache();
+            services.AddTransient<IUsuarioRepository, UsuarioRepository>();
+            services.AddSession(options =>
             {
-                {
-                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    c.IncludeXmlComments(xmlPath);
-                }
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Peliculas API", Version = "v1" });
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, config =>
+            {
+                config.AccessDeniedPath = "/Manage/ErrorAcceso";
+            });
+
+            //Necesitamos indicar un provedor de almacenamiento para tempdata
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+
+            //Registro del servicio - SignalR
+            services.AddSignalR();
+
+            services.AddControllersWithViews(options => options.EnableEndpointRouting = false).AddSessionStateTempDataProvider();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ADMINISTRADORES", policy => policy.RequireRole("ADMIN"));
             });
 
             services.AddCors(options =>
@@ -59,25 +66,34 @@ namespace ChatSignalR
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
             }
-
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}"
+                    );
+            });
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}"
-                    );
                 endpoints.MapHub<ChatHub>("/Chats");
             });
         }

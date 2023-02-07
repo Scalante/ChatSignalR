@@ -1,10 +1,11 @@
 ﻿@model int
 
-<h1 class="text-center">@ChatSignalR.Controllers.ChatsController.ChatListOptions.GetValueOrDefault(Model)</h1>
+@*<h1 class="text-center">@ChatSignalR.Controllers.ChatsController.ChatListOptions.GetValueOrDefault(Model)</h1>*@
+<h1 class="text-center">@ViewData["NombreSalaChat"]</h1>
 
 <div class="row justify-content-center">
     <div class="mb-2">
-        <input class="form-control" type="text" placeholder="Introduzca su usuario" id="user" />
+        <input class="form-control" type="text" placeholder="Introduzca su usuario" id="user" value="@Context.User.Identity.Name" />
         <input class="form-control" type="text" placeholder="Introduzca su mensaje" id="message" />
         <br />
         <div class="text-center">

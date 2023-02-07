@@ -1,4 +1,4 @@
-namespace ChatSignalR.Models
+namespace ChatSignalR.Core.Entities
 {
     public class ErrorViewModel
     {

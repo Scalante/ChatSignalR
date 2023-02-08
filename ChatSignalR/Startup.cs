@@ -30,7 +30,7 @@ namespace ChatSignalR
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(2);
+                options.IdleTimeout = TimeSpan.Zero;
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -42,8 +42,9 @@ namespace ChatSignalR
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, config =>
             {
-                config.ExpireTimeSpan = TimeSpan.FromMinutes(2);
-                config.SlidingExpiration = true;
+                config.ExpireTimeSpan = TimeSpan.Zero;
+                //En false - Permite que la cookie no renueve la hora indicada en el momento de iniciar sesión.
+                config.SlidingExpiration = false;
                 config.AccessDeniedPath = "/Manage/ErrorAcceso";
             });
 

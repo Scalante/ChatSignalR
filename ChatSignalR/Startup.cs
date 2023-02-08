@@ -4,6 +4,7 @@ using ChatSignalR.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -29,7 +30,9 @@ namespace ChatSignalR
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(2);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             services.AddAuthentication(options =>
@@ -39,6 +42,8 @@ namespace ChatSignalR
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, config =>
             {
+                config.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+                config.SlidingExpiration = true;
                 config.AccessDeniedPath = "/Manage/ErrorAcceso";
             });
 

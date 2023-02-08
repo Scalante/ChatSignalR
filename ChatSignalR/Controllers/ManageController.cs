@@ -52,7 +52,8 @@ namespace ChatSignalR.Controllers
                 ClaimsPrincipal userPrincipal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, new AuthenticationProperties
                 {
-                    ExpiresUtc = DateTime.Now.AddMinutes(5)
+                    IsPersistent= true,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(2)
                 });
 
                 return RedirectToAction("Index", "Home");
